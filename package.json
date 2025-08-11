@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://ayunani.github.io/pantry-pal",
+  "homepage": "https://ayunani.github.io/pantry-pal-app",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -21,3 +21,4 @@
     "gh-pages": "^6.0.0"
   }
 }
+

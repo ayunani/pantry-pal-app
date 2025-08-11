@@ -10,28 +10,31 @@ function App() {
   const [cuisine, setCuisine] = useState("");
 
   const [recipes, setRecipes] = useState([]); // Stores recipe results
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // For now: create fake recipes using inputs
-    const sampleRecipes = [
-      {
-        title: `${cuisine} ${meat} with ${carb}`,
-        description: `A tasty ${cuisine} dish made in ${time} minutes.`,
-      },
-      {
-        title: `${vegetable} & ${meat} stir-fry`,
-        description: `Quick and flavorful, ready in ${time} minutes.`,
-      },
-      {
-        title: `${carb} and ${vegetable} salad`,
-        description: `A light and fresh ${cuisine} recipe.`,
-      },
-    ];
-
-    setRecipes(sampleRecipes);
-  };
+  const WORKER_URL = "https://plain-hat-398a.ayunanij.workers.dev/";
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setRecipes([]); // clear old
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        meat, carb, vegetable, time: Number(time || 60), cuisine
+        // we'll add spice/maxIngredients/vegetarian later
+      }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json(); // expects { recipes: [...] }
+    if (Array.isArray(data.recipes)) {
+      setRecipes(data.recipes);
+    } else {
+      throw new Error("Bad JSON shape from Worker");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Sorry—recipe generation failed. Check the Worker logs.");
+  }
+};
 
   return (
     <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
