@@ -1,3 +1,12 @@
+/* emergency text fix */
+html, body, #root {
+  background: #ffffff !important;
+  color: #111 !important;
+}
+.app, .recipes-wrap, .filters, .recipe-card {
+  color: #111 !important;
+}
+
 :root{
   --bg: #f7f7fb;
   --card: #ffffff;
