@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./App.css?v=5";
+import "./App.css?v=6";
 
 function App() {
   const [meat, setMeat] = useState("");
