@@ -1,0 +1,13 @@
+name = "plain-hat-398a"
+main = "src/worker.js"  # or your actual Worker file path
+compatibility_date = "2025-08-11"
+
+[vars]
+# Optional: non-secret vars go here
+
+# You can have multiple environments
+[env.dev]
+name = "plain-hat-398a-dev"
+
+[env.prod]
+name = "plain-hat-398a-prod"
