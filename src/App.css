@@ -1,3 +1,7 @@
+/* DEBUG MODE — outlines all elements so we can find what's misaligned */
+* {
+  outline: 1px solid rgba(255, 0, 0, 0.3); /* light red overlay */
+}
 /* Hard reset + centering foundation */
 * { box-sizing: border-box; }
 html, body { height: 100%; }
