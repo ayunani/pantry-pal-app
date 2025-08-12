@@ -1,3 +1,25 @@
+/* Hard reset + centering foundation */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg, #f7f7fb); color: var(--ink, #0f172a); }
+
+/* Make the root center the app */
+#root {
+  min-height: 100%;
+  display: flex;
+  justify-content: center; /* horizontal centering */
+  /* remove any odd padding that can make it look off-center */
+  padding: 0;
+  text-align: initial;
+}
+
+/* Constrain and center the main app */
+.app {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
 /* emergency text fix */
 html, body, #root {
   background: #ffffff !important;
