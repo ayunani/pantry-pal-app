@@ -1,137 +1,136 @@
 import { useState } from "react";
 import "./App.css";
 
-
 function App() {
   const [meat, setMeat] = useState("");
   const [carb, setCarb] = useState("");
   const [vegetable, setVegetable] = useState("");
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState("45");
   const [cuisine, setCuisine] = useState("");
 
-  const [recipes, setRecipes] = useState([]); // Stores recipe results
-  const WORKER_URL = "https://plain-hat-398a.ayunanij.workers.dev/";
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState([]);  // <-- single source of truth
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const WORKER_URL = "https://plain-hat-398a.ayunanij.workers.dev/";
 
-  /** This const shows the jscript code of what happens when a user clicks on the Get Recipe button */
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setRecipes([]);
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ meat, carb, vegetable, time: Number(time || 60), cuisine })
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json(); // { recipes: [...] }
-    if (!Array.isArray(data.recipes)) throw new Error("Bad JSON shape");
-    setRecipes(data.recipes);
-  } catch (err) {
-    console.error(err);
-    setError("Recipe generation failed. Check the Worker logs.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setRecipes([]);
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          meat,
+          carb,
+          vegetable,
+          time: Number(time || 60),
+          cuisine
+        })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json(); // { recipes: [...] }
+      if (!Array.isArray(data.recipes)) throw new Error("Bad JSON shape");
+      setRecipes(data.recipes);
+    } catch (err) {
+      console.error(err);
+      setError("Recipe generation failed. Check the Worker logs.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <h1>Pantry Pal</h1>
+    <div className="app">
+      <header className="app-header">
+        <h1 className="brand">Pantry Pal</h1>
+        <p className="sub">Turn what you have into dinner ideas</p>
+</header>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Meat: </label>
-          <input value={meat} onChange={(e) => setMeat(e.target.value)} />
+
+      <form className="filters" onSubmit={handleSubmit}>
+        <div className="field">
+          <label>Meat</label>
+          <input value={meat} onChange={(e) => setMeat(e.target.value)} placeholder="chicken, beef, none…" />
         </div>
-        <div>
-          <label>Carb: </label>
-          <input value={carb} onChange={(e) => setCarb(e.target.value)} />
+
+        <div className="field">
+          <label>Carb</label>
+          <input value={carb} onChange={(e) => setCarb(e.target.value)} placeholder="rice, pasta, bread…" />
         </div>
-        <div>
-          <label>Vegetable: </label>
+
+        <div className="field">
+          <label>Vegetable</label>
+          <input value={vegetable} onChange={(e) => setVegetable(e.target.value)} placeholder="broccoli, spinach…" />
+        </div>
+
+        <div className="field">
+          <label className="range-label">
+            Time: <strong>{time}</strong> min
+          </label>
           <input
-            value={vegetable}
-            onChange={(e) => setVegetable(e.target.value)}
+            type="range"
+            className="slider"
+            min="20"
+            max="120"
+            step="5"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
           />
-        </div>
-<div style={{ marginBottom: "15px" }}>
-  <label>
-    Time: {time} minutes
-  </label>
-  <input
-    type="range"
-    className="slider"
-    min="20"
-    max="120"
-    step="5"
-    value={time}
-    onChange={(e) => setTime(e.target.value)}
-  />
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      fontSize: "0.9em",
-      color: "#555",
-      marginTop: "4px"
-    }}
-  >
-    <span>Quick Meal</span>
-    <span>Slow Cook</span>
-  </div>
-</div>
-
-
-        <div>
-          <label>Cuisine: </label>
-          <input value={cuisine} onChange={(e) => setCuisine(e.target.value)} />
+          <div className="range-hints">
+            <span>Quick Meal</span>
+            <span>Slow Cook</span>
+          </div>
         </div>
 
-        <button type="submit" style={{ marginTop: "10px" }}>
-          Get Recipes
-        </button>
+        <div className="field">
+          <label>Cuisine</label>
+          <input value={cuisine} onChange={(e) => setCuisine(e.target.value)} placeholder="asian, italian, any…" />
+        </div>
+
+        <button type="submit" className="primary">Get Recipes</button>
       </form>
 
-      {loading && <p>Generating recipes…</p>}
-{error && <p style={{ color: "crimson" }}>{error}</p>}
+      {loading && <p className="info">Generating recipes…</p>}
+      {error && <p className="error">{error}</p>}
 
-{recipes.length > 0 && (
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gap: "20px",
-      marginTop: "20px",
-    }}
-  >
-    {recipes.map((r, i) => (
-      <div key={i} style={{ border: "1px solid #ddd", padding: 16, borderRadius: 10 }}>
-        <h3 style={{ marginTop: 0 }}>{r.title}</h3>
-        <p style={{ margin: "6px 0", color: "#555" }}>{r.summary}</p>
-        <p style={{ fontSize: 14, margin: "6px 0" }}><strong>Time:</strong> {r.time} min</p>
-        <div style={{ marginTop: 10 }}>
-          <strong>Ingredients</strong>
-          <ul style={{ paddingLeft: 18, marginTop: 6 }}>
-            {r.ingredients.map((ing, idx) => <li key={idx}>{ing}</li>)}
-          </ul>
-        </div>
-        <div style={{ marginTop: 10 }}>
-          <strong>Steps</strong>
-          <ol style={{ paddingLeft: 18, marginTop: 6 }}>
-            {r.steps.map((s, idx) => <li key={idx}>{s}</li>)}
-          </ol>
-        </div>
-      </div>
-    ))}
-  </div>
-)}
+      {recipes.length > 0 && (
+        <section className="recipes-wrap">
+          <h2 className="section-title">Recipes</h2>
+          <div className="recipes-grid" id="recipes">
+            {recipes.map((r, i) => (
+              <article className="recipe-card" key={i}>
+                <header className="recipe-header">
+                  <h3 className="recipe-title">{r.title}</h3>
+                  <span className="recipe-time">{r.time} min</span>
+                </header>
 
+                {r.summary && <p className="recipe-summary">{r.summary}</p>}
+
+                {Array.isArray(r.ingredients) && r.ingredients.length > 0 && (
+                  <details className="recipe-details" open>
+                    <summary>Ingredients</summary>
+                    <ul className="recipe-list">
+                      {r.ingredients.map((ing, idx) => <li key={idx}>{ing}</li>)}
+                    </ul>
+                  </details>
+                )}
+
+                {Array.isArray(r.steps) && r.steps.length > 0 && (
+                  <details className="recipe-details">
+                    <summary>Steps</summary>
+                    <ol className="recipe-steps">
+                      {r.steps.map((s, idx) => <li key={idx}>{s}</li>)}
+                    </ol>
+                  </details>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
